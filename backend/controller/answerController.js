@@ -1,4 +1,3 @@
-// backend/controllers/answerController.js
 const Answer = require("../models/Answer");
 
 /** GET /api/answers?adminViewed=<true|false> */
@@ -9,7 +8,7 @@ async function listAnswers(req, res) {
       filter.adminViewed = req.query.adminViewed === "true";
     }
     const data = await Answer.find(filter)
-      .populate("responses.question", "question")
+      .populate("responses.question", "question caption image")
       .sort({ updatedAt: -1 });
     res.json({ message: "Answers fetched", data, success: true, error: false });
   } catch (err) {
@@ -22,7 +21,7 @@ async function getByPhone(req, res) {
   try {
     const { phoneNumber } = req.params;
     const data = await Answer.findOne({ phoneNumber })
-      .populate("responses.question", "question");
+      .populate("responses.question", "question caption image");
     if (!data)
       return res
         .status(404)
@@ -67,8 +66,10 @@ async function updateResponse(req, res) {
       return res
         .status(404)
         .json({ message: "Response not found", success: false, error: true });
+
     if (answer !== undefined) resp.answer = answer;
     if (confirmed !== undefined) resp.confirmed = confirmed;
+
     await doc.save();
     res.json({ message: "Updated", data: resp, success: true, error: false });
   } catch (err) {
@@ -84,7 +85,7 @@ async function deleteResponse(req, res) {
       { phoneNumber },
       { $pull: { responses: { question: questionId } } },
       { new: true }
-    );
+    ).populate("responses.question", "question caption image");
     if (!doc)
       return res
         .status(404)
