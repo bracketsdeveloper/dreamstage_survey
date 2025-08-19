@@ -6,6 +6,7 @@ import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Questions from "../pages/Questions";
 import AnswersPage from "../pages/Answers";
+import Campaign from "../pages/Campaign";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,11 @@ const router = createBrowserRouter([
             {
                 path:"responses",
                 element:<AnswersPage/>
+            }
+            ,
+            {
+                path:"campaign", // NEW
+                element:<Campaign/>
             }
         ]
     }

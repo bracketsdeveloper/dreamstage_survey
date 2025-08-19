@@ -1,4 +1,3 @@
-// src/components/Header.js
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -8,7 +7,6 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  /* keep header in sync with storage changes (e.g. another tab) */
   useEffect(() => {
     const sync = () => setLoggedIn(!!localStorage.getItem("token"));
     window.addEventListener("storage", sync);
@@ -31,10 +29,8 @@ const Header = () => {
             <Link to="/">
               <img src={logo} alt="Logo" className="h-14 w-auto" />
             </Link>
-            {/* only show nav when logged in */}
             {loggedIn && (
               <nav className="ml-10 hidden space-x-8 md:flex">
-                
                 <Link
                   to="/manage-questions"
                   className="font-medium text-gray-900 hover:text-blue-600"
@@ -47,11 +43,18 @@ const Header = () => {
                 >
                   Manage Responses
                 </Link>
+                {/* NEW */}
+                <Link
+                  to="/campaign"
+                  className="font-medium text-gray-900 hover:text-blue-600"
+                >
+                  Campaign
+                </Link>
               </nav>
             )}
           </div>
 
-          {/* Right side */}
+          {/* Right */}
           {!loggedIn ? (
             <Link
               to="/login"

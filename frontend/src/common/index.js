@@ -1,4 +1,3 @@
-//frontend/src/common/index.js
 const Backend = process.env.REACT_APP_BACKEND_URL
 
 const SummaryApi = {
@@ -29,27 +28,37 @@ const SummaryApi = {
     GetAllAnswers: {
         url: `${Backend}/api/answers`,
         method: "get",
-      },
-      GetAnswerByPhone: (phone) => ({
+    },
+    GetAnswerByPhone: (phone) => ({
         url: `${Backend}/api/answers/${phone}`,
         method: "get",
-      }),
-      MarkViewed: (phone) => ({
+    }),
+    MarkViewed: (phone) => ({
         url: `${Backend}/api/answers/${phone}/viewed`,
         method: "put",
-      }),
-      UpdateResponse: (phone, qid) => ({
+    }),
+    UpdateResponse: (phone, qid) => ({
         url: `${Backend}/api/answers/${phone}/responses/${qid}`,
         method: "put",
-      }),
-      DeleteResponse: (phone, qid) => ({
+    }),
+    DeleteResponse: (phone, qid) => ({
         url: `${Backend}/api/answers/${phone}/responses/${qid}`,
         method: "delete",
-      }),
-      DeleteAnswer: (phone) => ({
+    }),
+    DeleteAnswer: (phone) => ({
         url: `${Backend}/api/answers/${phone}`,
         method: "delete",
-      }),
+    }),
+
+    // NEW: Campaign
+    CampaignDownloadTemplate: {
+        url: `${Backend}/api/campaign/sample`,
+        method: "get",
+    },
+    CampaignUploadExcel: {
+        url: `${Backend}/api/campaign/upload`,
+        method: "post",
+    },
 }
 
 export default SummaryApi

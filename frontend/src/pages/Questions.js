@@ -12,12 +12,14 @@ const Questions = () => {
   const [editData, setEditData] = useState(null);
   const toast = useToast();
 
+  const authHeader = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+
   const fetchQuestions = async () => {
     try {
       const res = await axios({
         method: SummaryApi.GetQuestions.method,
         url: SummaryApi.GetQuestions.url,
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: authHeader,
       });
       setQuestions(Array.isArray(res.data.data) ? res.data.data : []);
     } catch {
@@ -27,6 +29,7 @@ const Questions = () => {
 
   useEffect(() => {
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openAdd = () => {
@@ -48,30 +51,28 @@ const Questions = () => {
     const { source, destination } = result;
     if (!destination) return;
 
-    // Prevent any item from being dropped into first position
-    if (destination.index === 0) {
-      toast.error("Position #1 is fixed and cannot be replaced");
-      return;
-    }
-
+    // Reorder in memory
     const reordered = Array.from(questions);
     const [removed] = reordered.splice(source.index, 1);
     reordered.splice(destination.index, 0, removed);
     setQuestions(reordered);
 
+    // Persist new order (1-based order on backend)
     try {
       await axios({
         method: SummaryApi.ReorderQuestions.method,
         url: SummaryApi.ReorderQuestions.url,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          ...authHeader,
         },
         data: { ids: reordered.map((q) => q._id) },
       });
       toast.success("Order saved");
     } catch (err) {
       toast.error(err.response?.data?.message || "Order save failed");
+      // revert UI if save failed
+      setQuestions(questions);
     }
   };
 
@@ -97,30 +98,23 @@ const Questions = () => {
                 className="divide-y"
               >
                 {questions.map((q, idx) => (
-                  <Draggable
-                    key={q._id}
-                    draggableId={q._id}
-                    index={idx}
-                    isDragDisabled={idx === 0} // first question cannot be dragged
-                  >
+                  <Draggable key={q._id} draggableId={q._id} index={idx}>
                     {(prov) => (
                       <li
                         ref={prov.innerRef}
                         {...prov.draggableProps}
-                        {...(idx === 0 ? {} : prov.dragHandleProps)}
+                        {...prov.dragHandleProps}
                         className="flex items-center justify-between px-4 py-3"
                       >
                         <span className="font-medium">
                           {idx + 1}. {q.question}
                         </span>
-                        {idx > 0 && (
-                          <button
-                            onClick={() => openEdit(q)}
-                            className="rounded bg-gray-200 px-2 py-1 text-xs"
-                          >
-                            Edit
-                          </button>
-                        )}
+                        <button
+                          onClick={() => openEdit(q)}
+                          className="rounded bg-gray-200 px-2 py-1 text-xs"
+                        >
+                          Edit
+                        </button>
                       </li>
                     )}
                   </Draggable>
